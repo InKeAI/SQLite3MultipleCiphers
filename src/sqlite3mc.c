@@ -209,7 +209,7 @@ mcRegisterCodecExtensions(sqlite3* db, char** pzErrMsg, const sqlite3_api_routin
 /*
 ** Codec implementation
 */
-#if HAVE_CIPHER_AES_128_CBC || HAVE_CIPHER_AES_256_CBC || HAVE_CIPHER_SQLCIPHER
+#if HAVE_CIPHER_AES_128_ECB || HAVE_CIPHER_AES_128_CBC || HAVE_CIPHER_AES_256_CBC || HAVE_CIPHER_SQLCIPHER
 #include "rijndael.c"
 #endif
 
@@ -226,6 +226,7 @@ mcRegisterCodecExtensions(sqlite3* db, char** pzErrMsg, const sqlite3_api_routin
 
 #include "codec_algos.c"
 
+#include "cipher_aes128ecb.c"
 #include "cipher_wxaes128.c"
 #include "cipher_wxaes256.c"
 #include "cipher_chacha20.c"
@@ -674,6 +675,12 @@ SQLITE_PRIVATE int
 sqlite3mc_initialize(const char* arg)
 {
   int rc = sqlite3mcInitCipherTables();
+#if HAVE_CIPHER_AES_128_ECB
+  if (rc == SQLITE_OK)
+  {
+    rc = sqlite3mcRegisterCipher(&mcAES128ECBDescriptor, mcAES128ECBParams, (CODEC_TYPE_AES128ECB == CODEC_TYPE));
+  }
+#endif
 #if HAVE_CIPHER_AES_128_CBC
   if (rc == SQLITE_OK)
   {

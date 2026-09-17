@@ -17,6 +17,10 @@
 /*
 ** Compatibility with wxSQLite3
 */
+#ifdef WXSQLITE3_HAVE_CIPHER_AES_128_ECB
+#define HAVE_CIPHER_AES_128_ECB WXSQLITE3_HAVE_CIPHER_AES_128_ECB
+#endif
+
 #ifdef WXSQLITE3_HAVE_CIPHER_AES_128_CBC
 #define HAVE_CIPHER_AES_128_CBC WXSQLITE3_HAVE_CIPHER_AES_128_CBC
 #endif
@@ -48,6 +52,10 @@
 /*
 ** Actual definitions of supported ciphers
 */
+#ifndef HAVE_CIPHER_AES_128_ECB
+#define HAVE_CIPHER_AES_128_ECB 1
+#endif
+
 #ifndef HAVE_CIPHER_AES_128_CBC
 #define HAVE_CIPHER_AES_128_CBC 1
 #endif
@@ -105,6 +113,7 @@
 #endif
 
 #ifdef SQLITE3MC_OMIT_BUILTIN_CIPHERS
+#undef HAVE_CIPHER_AES_128_ECB
 #undef HAVE_CIPHER_AES_128_CBC
 #undef HAVE_CIPHER_AES_256_CBC
 #undef HAVE_CIPHER_CHACHA20
@@ -112,6 +121,7 @@
 #undef HAVE_CIPHER_RC4
 #undef HAVE_CIPHER_ASCON128
 #undef HAVE_CIPHER_AEGIS
+#define HAVE_CIPHER_AES_128_ECB 0
 #define HAVE_CIPHER_AES_128_CBC 0
 #define HAVE_CIPHER_AES_256_CBC 0
 #define HAVE_CIPHER_CHACHA20    0
@@ -125,6 +135,7 @@
 ** Check that at least one cipher is be supported
 */
 #if SQLITE3MC_HAVE_DYNAMIC_CIPHERS == 0 && \
+    HAVE_CIPHER_AES_128_ECB == 0 &&  \
     HAVE_CIPHER_AES_128_CBC == 0 &&  \
     HAVE_CIPHER_AES_256_CBC == 0 &&  \
     HAVE_CIPHER_CHACHA20    == 0 &&  \
